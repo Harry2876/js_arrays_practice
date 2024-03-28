@@ -75,8 +75,39 @@ const createdUserNames = function (accs) {
 
 createdUserNames(accounts);
 
-console.log(accounts);
+//Adding feature to display the balance
+
+const calcPrintBalance = movements => {
+  const balance = movements.reduce((acc, move) => acc + move, 0);
+  labelBalance.textContent = ` ${balance} EUR `;
+};
+
+calcPrintBalance(account1.movements);
 
 /////////////////////////////////////////////////
 
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+//Displaying account summary feature
+const calcDisplayAccSummary = movements => {
+  const income = movements
+    .filter(mov => mov > 0)
+    .reduce((acc, cur) => acc + cur, 0);
+  labelSumIn.textContent = `${income}EUR`;
+
+  const outcome = movements
+    .filter(mov => mov < 0)
+    .reduce((acc, cur) => acc + cur, 0);
+  //using Math.abs to get absolute value i.e remove negative sign
+  labelSumOut.textContent = `${Math.abs(outcome)}`;
+
+  const interest = movements
+    .filter(mov => mov > 0)
+    .map(dep => (dep * 1.2) / 100)
+    .filter((int, i, arr) => int >= 1)
+    .reduce((acc, int) => acc + int, 0);
+
+  labelSumInterest.textContent = `${interest}EUR`;
+};
+
+calcDisplayAccSummary(account1.movements);
