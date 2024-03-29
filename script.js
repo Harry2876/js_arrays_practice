@@ -75,6 +75,21 @@ const createdUserNames = function (accs) {
 
 createdUserNames(accounts);
 
+//Displaying account transaction history
+const displayMovements = movements => {
+  movements.forEach((mov, i) => {
+    const type = mov > 0 ? 'deposit' : 'withdrawal';
+
+    const html = `<div class="movements__row">
+    <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
+    <div class="movements__value">${mov}</div>
+  </div>
+    `;
+
+    containerMovements.insertAdjacentHTML('afterbegin', html);
+  });
+};
+
 //Adding feature to display the balance
 
 const calcPrintBalance = movements => {
@@ -82,32 +97,58 @@ const calcPrintBalance = movements => {
   labelBalance.textContent = ` ${balance} EUR `;
 };
 
-calcPrintBalance(account1.movements);
-
-/////////////////////////////////////////////////
-
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-
 //Displaying account summary feature
-const calcDisplayAccSummary = movements => {
-  const income = movements
+const calcDisplayAccSummary = acc => {
+  const income = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, cur) => acc + cur, 0);
   labelSumIn.textContent = `${income}EUR`;
 
-  const outcome = movements
+  const outcome = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, cur) => acc + cur, 0);
   //using Math.abs to get absolute value i.e remove negative sign
   labelSumOut.textContent = `${Math.abs(outcome)}`;
 
-  const interest = movements
+  const interest = acc.movements
     .filter(mov => mov > 0)
-    .map(dep => (dep * 1.2) / 100)
+    .map(dep => (dep * acc.interestRate) / 100)
     .filter((int, i, arr) => int >= 1)
     .reduce((acc, int) => acc + int, 0);
 
   labelSumInterest.textContent = `${interest}EUR`;
 };
 
-calcDisplayAccSummary(account1.movements);
+//Adding login functionality
+let currentAccount;
+
+btnLogin.addEventListener('click', e => {
+  //prevent from submitting
+  e.preventDefault();
+
+  currentAccount = accounts.find(
+    acc => acc.username === inputLoginUsername.value
+  );
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    //Display UI and Message
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(' ')[0]
+    }`;
+
+    containerApp.style.opacity = 100;
+
+    //Remove Credentials after login
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginPin.blur();
+
+    //Display Movements
+    displayMovements(currentAccount.movements);
+
+    //Display Balance
+    calcPrintBalance(currentAccount.movements);
+
+    //Display Summary
+    calcDisplayAccSummary(currentAccount);
+  }
+});
