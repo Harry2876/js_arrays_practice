@@ -92,9 +92,9 @@ const displayMovements = movements => {
 
 //Adding feature to display the balance
 
-const calcPrintBalance = movements => {
-  const balance = movements.reduce((acc, move) => acc + move, 0);
-  labelBalance.textContent = ` ${balance} EUR `;
+const calcPrintBalance = acc => {
+  acc.balance = acc.movements.reduce((acc, move) => acc + move, 0);
+  labelBalance.textContent = ` ${acc.balance} EUR `;
 };
 
 //Displaying account summary feature
@@ -117,6 +117,18 @@ const calcDisplayAccSummary = acc => {
     .reduce((acc, int) => acc + int, 0);
 
   labelSumInterest.textContent = `${interest}EUR`;
+};
+
+//Adding function to update Ui
+const updateUi = acc => {
+  //Display Movements
+  displayMovements(acc.movements);
+
+  //Display Balance
+  calcPrintBalance(acc);
+
+  //Display Summary
+  calcDisplayAccSummary(acc);
 };
 
 //Adding login functionality
@@ -142,13 +154,33 @@ btnLogin.addEventListener('click', e => {
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
 
-    //Display Movements
-    displayMovements(currentAccount.movements);
+    //Update Ui
+    updateUi(currentAccount);
+  }
+});
 
-    //Display Balance
-    calcPrintBalance(currentAccount.movements);
+//Implementing Transfers
+btnTransfer.addEventListener('click', e => {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAcc = accounts.find(
+    acc => acc.username === inputTransferTo.value
+  );
 
-    //Display Summary
-    calcDisplayAccSummary(currentAccount);
+  if (
+    amount > 0 &&
+    receiverAcc &&
+    currentAccount.balance >= amount &&
+    receiverAcc?.username !== currentAccount.username
+  ) {
+    //Adding Transfer function
+    currentAccount.movements.push(-amount);
+    receiverAcc.movements.push(amount);
+    alert(` Transfer Successfull !! \n Money Sent to ${receiverAcc.owner} `);
+
+    //Update Ui
+    updateUi(currentAccount);
+
+    inputTransferAmount.value = inputTransferTo.value = '';
   }
 });
