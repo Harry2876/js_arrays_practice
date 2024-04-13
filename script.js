@@ -167,6 +167,8 @@ btnTransfer.addEventListener('click', e => {
     acc => acc.username === inputTransferTo.value
   );
 
+  inputTransferAmount.value = inputTransferTo.value = '';
+
   if (
     amount > 0 &&
     receiverAcc &&
@@ -180,7 +182,26 @@ btnTransfer.addEventListener('click', e => {
 
     //Update Ui
     updateUi(currentAccount);
-
-    inputTransferAmount.value = inputTransferTo.value = '';
   }
+});
+
+//Implementing Close Account Feature
+btnClose.addEventListener('click', e => {
+  e.preventDefault();
+
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+
+    //Delete Account
+    accounts.splice(index, 1);
+
+    //Hide Ui after Delete
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = inputClosePin.value = '';
 });
