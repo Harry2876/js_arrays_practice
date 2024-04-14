@@ -76,8 +76,11 @@ const createdUserNames = function (accs) {
 createdUserNames(accounts);
 
 //Displaying account transaction history
-const displayMovements = movements => {
-  movements.forEach((mov, i) => {
+const displayMovements = (movements, sort = false) => {
+  containerMovements.innerHTML = '';
+
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  movs.forEach((mov, i) => {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     const html = `<div class="movements__row">
@@ -185,6 +188,23 @@ btnTransfer.addEventListener('click', e => {
   }
 });
 
+//Implement Loan Feature
+btnLoan.addEventListener('click', e => {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount / 10)) {
+    //Add movement
+    currentAccount.movements.push(amount);
+
+    //Update Ui
+    updateUi(currentAccount);
+
+    inputLoanAmount.value = '';
+  }
+});
+
 //Implementing Close Account Feature
 btnClose.addEventListener('click', e => {
   e.preventDefault();
@@ -204,4 +224,11 @@ btnClose.addEventListener('click', e => {
     containerApp.style.opacity = 0;
   }
   inputCloseUsername.value = inputClosePin.value = '';
+});
+
+let sorted = false;
+btnSort.addEventListener('click', e => {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
 });
