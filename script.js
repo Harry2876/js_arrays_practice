@@ -195,11 +195,13 @@ btnLoan.addEventListener('click', e => {
   const amount = Number(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount / 10)) {
-    //Add movement
-    currentAccount.movements.push(amount);
+    setTimeout(() => {
+      //Add movement
+      currentAccount.movements.push(amount);
 
-    //Update Ui
-    updateUi(currentAccount);
+      //Update Ui
+      updateUi(currentAccount);
+    }, 2500);
 
     inputLoanAmount.value = '';
   }
