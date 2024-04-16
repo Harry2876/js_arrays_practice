@@ -201,9 +201,14 @@ btnLoan.addEventListener('click', e => {
 
       //Update Ui
       updateUi(currentAccount);
+
+      alert(`Loan Approved to ${currentAccount.owner}`);
     }, 2500);
 
     inputLoanAmount.value = '';
+  } else {
+    inputLoanAmount.value = '';
+    alert('Insufficient funds');
   }
 });
 
